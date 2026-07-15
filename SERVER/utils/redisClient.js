@@ -12,27 +12,50 @@ let isConnected = false;
 
 const initializeRedis = async () => {
     try {
+        if (process.env.REDIS_ENABLED === 'false') {
+            console.log('⚠️ Redis disabled via REDIS_ENABLED=false');
+            return false;
+        }
+
         const redisHost = process.env.REDIS_HOST || 'localhost';
         const redisPort = Number(process.env.REDIS_PORT || 6379);
         const redisUrl = process.env.REDIS_URL || `redis://${redisHost}:${redisPort}`;
 
-        redisClient = redis.createClient({
+        const clientOptions = process.env.REDIS_URL ? {
             url: redisUrl,
+            socket: {
+                connectTimeout: 5000,
+                reconnectStrategy: false
+            }
+        } : {
             socket: {
                 host: redisHost,
                 port: redisPort,
-                reconnectStrategy: (retries) => Math.min(retries * 50, 500)
-            }
-        });
+                connectTimeout: 5000,
+                reconnectStrategy: false
+            },
+            password: process.env.REDIS_PASSWORD || undefined
+        };
+
+        redisClient = redis.createClient(clientOptions);
 
         // Event handlers
         redisClient.on('connect', () => {
-            console.log('✅ Redis Connected Successfully');
+            console.log('✅ Redis socket connected');
+        });
+
+        redisClient.on('ready', () => {
+            console.log('✅ Redis is ready');
             isConnected = true;
         });
 
         redisClient.on('error', (err) => {
             console.warn('⚠️ Redis error (but app will continue with database):', err.message);
+            isConnected = false;
+        });
+
+        redisClient.on('end', () => {
+            console.warn('⚠️ Redis connection closed');
             isConnected = false;
         });
 
@@ -44,7 +67,12 @@ const initializeRedis = async () => {
         await redisClient.connect();
         return true;
     } catch (err) {
-        console.warn('⚠️ Redis initialization skipped (database will be used):', err.message);
+        // Only log the raw error once on initialization failure.
+        if (err.message && err.message.includes('getaddrinfo ENOTFOUND')) {
+            console.warn('⚠️ Redis host could not be resolved:', err.message);
+        } else {
+            console.warn('⚠️ Redis initialization skipped (database will be used):', err.message);
+        }
         isConnected = false;
         return false;
     }
@@ -56,7 +84,7 @@ const initializeRedis = async () => {
  */
 const getCache = async (key) => {
     try {
-        if (!isConnected || !redisClient) return null;
+        if (!redisClient || !redisClient.isOpen) return null;
         
         const value = await redisClient.get(key);
         return value ? JSON.parse(value) : null;
@@ -72,7 +100,7 @@ const getCache = async (key) => {
  */
 const setCache = async (key, value, ttlSeconds = 300) => {
     try {
-        if (!isConnected || !redisClient) return false;
+        if (!redisClient || !redisClient.isOpen) return false;
         
         await redisClient.setEx(key, ttlSeconds, JSON.stringify(value));
         return true;
@@ -88,7 +116,7 @@ const setCache = async (key, value, ttlSeconds = 300) => {
  */
 const deleteCache = async (key) => {
     try {
-        if (!isConnected || !redisClient) return false;
+        if (!redisClient || !redisClient.isOpen) return false;
         
         await redisClient.del(key);
         return true;
@@ -104,7 +132,7 @@ const deleteCache = async (key) => {
  */
 const deleteCachePattern = async (pattern) => {
     try {
-        if (!isConnected || !redisClient) return 0;
+        if (!redisClient || !redisClient.isOpen) return 0;
         
         const keys = await redisClient.keys(pattern);
         if (keys.length === 0) return 0;
@@ -123,7 +151,7 @@ const deleteCachePattern = async (pattern) => {
  */
 const clearAllCache = async () => {
     try {
-        if (!isConnected || !redisClient) return false;
+        if (!redisClient || !redisClient.isOpen) return false;
         
         await redisClient.flushDb();
         console.log('✅ All cache cleared');
@@ -137,7 +165,7 @@ const clearAllCache = async () => {
 /**
  * Check if Redis is connected
  */
-const isRedisConnected = () => isConnected;
+const isRedisConnected = () => Boolean(redisClient && redisClient.isOpen);
 
 /**
  * Get Redis client instance

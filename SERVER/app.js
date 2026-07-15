@@ -88,11 +88,11 @@ const connectDB = async () => {
 
 // Initialize Redis cache (optional, non-blocking)
 const connectRedis = async () => {
-    try {
-        await initializeRedis();
+    const startedRedis = await initializeRedis();
+    if (startedRedis) {
         console.log('🚀 Redis Cache initialized successfully');
-    } catch (err) {
-        console.warn('⚠️ Redis initialization failed (database-only mode):', err.message);
+    } else {
+        console.warn('⚠️ Redis initialization failed (database-only mode)');
     }
 };
 
