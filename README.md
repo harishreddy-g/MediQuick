@@ -37,7 +37,7 @@ Run steps (use two terminals):
 - Open a terminal and run:
 
 ```powershell
-cd backend
+cd SERVER
 npm install
 node app.js
 ```
@@ -47,7 +47,7 @@ node app.js
 - Open a second terminal and run:
 
 ```powershell
-cd FDFED_project_react_app
+cd CLIENT
 npm install
 npm run dev
 ```

@@ -67,6 +67,7 @@ import DoctorReviewPage from './components/pages/DoctorReviewPage';
 import ErrorPage from './components/common/ErrorPage';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import OpenAIAgent from './components/common/OpenAIAgent';
 
 function App() {
   useEffect(() => {
@@ -166,6 +167,7 @@ function App() {
         {/* ERROR PAGE */}
         <Route path="/error" element={<ErrorPage />} />
       </Routes>
+        <OpenAIAgent />
         {showGlobalFooter && <Footer />}
       </ErrorBoundary>
     </BrowserRouter>
