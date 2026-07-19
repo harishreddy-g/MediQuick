@@ -3451,3 +3451,5 @@
 ::1 - 69dc7d515d4cc5516b2e66b3 [doctor] [19/Apr/2026:06:51:03 +0000] "GET /appointment/api/booked-slots?doctorId=69dc7d515d4cc5516b2e66b3&date=2026-04-19&type=offline HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0" 707.645 ms
 ::1 - anonymous [guest] [15/Jul/2026:08:23:05 +0000] "GET /api/health HTTP/1.1" 200 84 "-" "-" 1.917 ms
 ::1 - anonymous [guest] [15/Jul/2026:13:07:05 +0000] "GET /api/health HTTP/1.1" 200 84 "-" "-" 2.782 ms
+::1 - anonymous [guest] [19/Jul/2026:06:16:54 +0000] "GET /api-docs HTTP/1.1" 301 158 "-" "Mozilla/5.0 (Windows NT; Windows NT 10.0; en-IN) WindowsPowerShell/5.1.26100.8875" 1.825 ms
+::1 - anonymous [guest] [19/Jul/2026:06:16:54 +0000] "GET /api-docs/ HTTP/1.1" 200 3122 "-" "Mozilla/5.0 (Windows NT; Windows NT 10.0; en-IN) WindowsPowerShell/5.1.26100.8875" 1.867 ms
