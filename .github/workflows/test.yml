@@ -42,14 +42,14 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
+        cache-dependency-path: SERVER/package-lock.json
 
     - name: Install backend dependencies
-      working-directory: ./backend
+      working-directory: ./SERVER
       run: npm ci
 
     - name: Run unit tests
-      working-directory: ./backend
+      working-directory: ./SERVER
       env:
         NODE_ENV: test
         MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
@@ -63,7 +63,7 @@ jobs:
 
 
     - name: Generate coverage report
-      working-directory: ./backend
+      working-directory: ./SERVER
       env:
         NODE_ENV: test
         MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
@@ -92,13 +92,13 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
-        cache-dependency-path: FDFED_project_react_app/package-lock.json
+        cache-dependency-path: CLIENT/package-lock.json
 
     - name: Install frontend dependencies
-      working-directory: ./FDFED_project_react_app
+      working-directory: ./CLIENT
       run: npm ci
 
     - name: Run ESLint
-      working-directory: ./FDFED_project_react_app
+      working-directory: ./CLIENT
       run: npm run lint
       continue-on-error: true
